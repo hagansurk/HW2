@@ -31,11 +31,10 @@ class Artistform(FlaskForm):
 	artist = StringField('Enter Artist Name Here: ', validators = [Required()])
 	submit = SubmitField('Submit')
 
-class ArtistInfo(FlaskForm):
-	tracks = StringField('Track Name: ', validators=[Required()])
+class AlbumEntryForm(FlaskForm):
+	album_name = StringField('Enter the name of an album: ', validators=[Required()])
+	like_ness = RadioField('How much do you like this album? (1 low, 3 high', validators = [Required()])
 	submit = SubmitField('Submit')
-
-
 
 ####################
 ###### ROUTES ######
@@ -69,7 +68,20 @@ def spec_art(artist_name):
 	artist = request.args.get(artist_name)
 	re = requests.get("https://itunes.apple.com/search?", params = {'term':artist_name}).json()
 	print(re)
-	return render_template('specific_artist.html', results = re['resultsy'])
+	return render_template('specific_artist.html', results = re['results'])
+
+@app.route('/album_entry')
+def alb_ent():
+	alb_form = AlbumEntryForm()
+	return render_template('album_entry.html', form= alb_form)
+
+@app.route('/album_result')
+def alb_res():
+	alb_form = AlbumEntryForm(request.form)
+	if request.method == 'GET' and alb_form.validate_on_submit():
+		album = alb_form.album_name.data
+		like = alb_form.like_ness.data
+		return render_template('album_data.html', album_enter=album, likeness = like)
 
 if __name__ == '__main__':
     app.run(use_reloader=True,debug=True)
