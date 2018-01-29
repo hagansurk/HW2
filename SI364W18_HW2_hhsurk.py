@@ -33,7 +33,7 @@ class Artistform(FlaskForm):
 
 class AlbumEntryForm(FlaskForm):
 	album_name = StringField('Enter the name of an album: ', validators=[Required()])
-	like_ness = RadioField('How much do you like this album? (1 low, 3 high', validators = [Required()])
+	like_ness = RadioField('How much do you like this album? (1 low, 3 high)', validators = [Required()])
 	submit = SubmitField('Submit')
 
 ####################
@@ -75,12 +75,11 @@ def alb_ent():
 	alb_form = AlbumEntryForm()
 	return render_template('album_entry.html', form= alb_form)
 
-@app.route('/album_result')
+@app.route('/album_result', methods = ['GET'])
 def alb_res():
-	alb_form = AlbumEntryForm(request.form)
-	if request.method == 'GET' and alb_form.validate_on_submit():
-		album = alb_form.album_name.data
-		like = alb_form.like_ness.data
+	if request.method == 'GET': 
+		album = request.args.get('album_name')
+		like = request.args.get('like')
 		return render_template('album_data.html', album_enter=album, likeness = like)
 
 if __name__ == '__main__':
